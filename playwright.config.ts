@@ -1,5 +1,5 @@
-import type { PlaywrightTestConfig } from '@playwright/test';
-import { devices } from '@playwright/test';
+import type { PlaywrightTestConfig } from "@playwright/test";
+import { devices } from "@playwright/test";
 
 const port = 3010;
 
@@ -7,14 +7,14 @@ const port = 3010;
  * See https://playwright.dev/docs/test-configuration.
  */
 const config: PlaywrightTestConfig = {
-  testDir: './test',
+  testDir: "./test",
   timeout: 30 * 1000,
   expect: {
     /**
      * Maximum time expect() should wait for the condition to be met.
      * For example in `await expect(locator).toHaveText();`
      */
-    timeout: 5000
+    timeout: 5000,
   },
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -25,7 +25,7 @@ const config: PlaywrightTestConfig = {
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: "html",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
@@ -33,22 +33,23 @@ const config: PlaywrightTestConfig = {
     /* Base URL to use in actions like `await page.goto('/')`. */
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
-    baseURL: `http://localhost:${port}`
+    trace: "on-first-retry",
+    baseURL: `http://localhost:${port}`,
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'firefox',
-      use: devices['Desktop Firefox'],
-    }
+      name: "firefox",
+      use: devices["Desktop Firefox"],
+    },
   ],
 
   /* Run your local dev server before starting the tests */
   webServer: {
     command: `node test/run-server.js ${port}`,
     port,
+    reuseExistingServer: true,
   },
 };
 
