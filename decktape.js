@@ -389,6 +389,7 @@ async function exportSlides(page, plugin, pdf, options) {
   let hasNext = await hasNextSlide(plugin, context);
   while (hasNext && context.currentSlide < maxSlide) {
     await nextSlide(plugin, context);
+    await loaded(page);
     await pause(options.pause);
     if (options.slides && !options.slides[context.currentSlide]) {
       process.stdout.write('\r' + await progressBar(plugin, context, { skip: true }));
@@ -575,6 +576,31 @@ async function writePdf(filename, pdf) {
   }
   fs.writeFileSync(filename, await pdf.save({ addDefaultPage: false }));
 }
+
+async function loaded(page) {
+  return page.evaluate(async () => {
+    const frames = document.querySelectorAll("iframe");
+    const promises = [];
+    for (const frame of frames) {
+      if (frame.checkVisibility()) {
+        promises.push(
+          new Promise((res) => {
+            if (frame.readyState === "complete") {
+              res();
+            }
+            function eventListener() {
+              frame.removeEventListener("load", eventListener);
+              res();
+            }
+            frame.addEventListener("load", eventListener);
+          })
+        );
+      }
+    }
+    await Promise.all(promises);
+  });
+}
+
 
 // TODO: add progress bar, duration, ETA and file size
 async function progressBar(plugin, context, { skip } = { skip: false }) {
